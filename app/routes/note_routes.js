@@ -14,9 +14,11 @@ module.exports = function(app, db) {
     app.get('/test', usercontroller.test);
 
     app.post('/user-create', usercontroller.create);
-    app.get('/user-details', usercontroller.findAll);
+    app.get('/user-list', usercontroller.findAll);
     app.get('/user/:id', usercontroller.findOne);
     app.post('/user/:id/update', usercontroller.update);
+
+    app.post('/user/delete', usercontroller.delete);
 
     app.post('/userfilter', usercontroller.findByParams);
 

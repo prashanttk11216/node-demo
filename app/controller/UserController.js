@@ -88,6 +88,17 @@ exports.update = (req, res) => {
 // Delete a note with the specified noteId in the request
 exports.delete = (req, res) => {
 
+    uid = req.body.uid;
+    userModel.remove({"_id":uid})
+    .then(data=>{
+
+        res.send('User Deleted Succesfuly.');
+    }).catch(err => {
+
+        res.status(500).send({
+            message: err.message || "Some error occurred while retrieving notes."
+        });
+    });
 };
 
 // exports.findByParams = (req, res) => {
