@@ -1,9 +1,11 @@
 /*module.exports = function(app, db) {
 };*/
 const { adminAuth, userAuth } = require("../middleware/auth.js");
-const usercontroller = require('../controller/UserController');
+// const usercontroller = require('../controller/UserController');
 const userregcontroller = require('../controller/UserRegController');
 const loginController = require('../controller/LoginController');
+
+const tokenController = require('../controller/TokenController');
 
 module.exports = function(app, db) {  
 
@@ -11,27 +13,31 @@ module.exports = function(app, db) {
         res.send('Hello')
     });
 
-    app.get('/test', usercontroller.test);
+    // app.get('/test', usercontroller.test);
 
-    app.post('/user-create', usercontroller.create);
-    app.get('/user-list', usercontroller.findAll);
-    app.get('/user/:id', usercontroller.findOne);
-    app.post('/user/:id/update', usercontroller.update);
+    // For admin Signup
 
-    app.post('/user/delete', usercontroller.delete);
+    app.post('/admin-reg', userregcontroller.adminCreate);
 
-    app.post('/userfilter', usercontroller.findByParams);
+    // For Users Registration
 
-    // for registration..........
+    app.post('/user-create', userregcontroller.create); // registration
+    app.get('/user-list', userregcontroller.findAll); // users list
+    app.get('/user/:id', userregcontroller.findOne);
+    app.post('/user/:id/update', userregcontroller.update);
 
-    app.post('/user-reg', userregcontroller.create);
+    app.post('/user/delete', userregcontroller.delete);
+
+    app.post('/userfilter', userregcontroller.findByParams);
 
     // for login
     app.post('/login', loginController.login);
+    // app.get('/logout',usercontroller.logout)
+
+    app.post('/get-token', tokenController.getToken);
 
 
-    app.get('/admin', adminAuth,usercontroller.findByAdmin);
-    app.get('/user', adminAuth,usercontroller.findByUser);
-    app.get('/logout',usercontroller.logout)
+    // app.get('/admin', adminAuth,usercontroller.findByAdmin);
+    // app.get('/user', adminAuth,usercontroller.findByUser);
 
 };

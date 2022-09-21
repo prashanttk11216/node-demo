@@ -1,4 +1,6 @@
-var userRegModel = require('../model/UserRegModel');
+// var userRegModel = require('../model/UserRegModel');
+var userRegModel = require('../model/UsersModel');
+
 const mongoose = require("mongoose");
 const bcrypt = require('bcrypt');
 // console.log("RRRR ", proModel)
@@ -8,13 +10,68 @@ exports.test = function (req, res) {
     res.send('Greetings from the Test controller!');
 };
 
+// For Admin Reg.....................................
+
+exports.adminCreate = async (req, res) => {
+
+    // Validate request
+    // res.send(req.body.name);
+    if(!req.body.fname) {
+        return res.status(400).send({
+            message: "Name can not be empty"
+        });
+    }
+    if(!req.body.email) {
+        return res.status(400).send({
+            message: "Email can not be empty"
+        });
+    }
+    
+    const checkUser = await userRegModel.findOne({ email:req.body.email });
+
+    if (checkUser) {
+      return res.status(409).send({message:"User Already Exist. Please Login"});
+    }
+
+        let hashPassword =  await bcrypt.hash(req.body.password,10);
+
+        var User = new userRegModel({
+            fname:   req.body.fname, 
+            lname:   req.body.lname, 
+            email:  req.body.email,
+            password: hashPassword,
+            role: req.body.role
+        });
+    
+        // Save Note in the database
+        User.save()
+        .then(data => {
+            
+           return res.status(200).send({message:'Registered successfuly.'});
+        
+        }).catch(err => {
+            res.status(500).send({
+                message: err.message || "Some error occurred while creating the Note."
+            });
+        });
+
+};
+
+
+// For Users Reg.................................................
+
 exports.create = async (req, res) => {
 
         // Validate request
         // res.send(req.body.name);
-        if(!req.body.name) {
+        if(!req.body.fname) {
             return res.status(400).send({
                 message: "Name can not be empty"
+            });
+        }
+        if(!req.body.email) {
+            return res.status(400).send({
+                message: "Email can not be empty"
             });
         }
         // if(!req.body.phone) {
@@ -34,7 +91,8 @@ exports.create = async (req, res) => {
             let hashPassword =  await bcrypt.hash(req.body.password,10);
 
             var User = new userRegModel({
-                name:   req.body.name, 
+                fname:   req.body.fname, 
+                lname:   req.body.lname, 
                 email:  req.body.email,
                 password: hashPassword,
                 role: req.body.role
@@ -97,6 +155,18 @@ exports.update = (req, res) => {
 
 // Delete a note with the specified noteId in the request
 exports.delete = (req, res) => {
+
+    uid = req.body.uid;
+    userRegModel.remove({"_id":uid})
+    .then(data=>{
+
+        res.send('User Deleted Succesfuly.');
+    }).catch(err => {
+
+        res.status(500).send({
+            message: err.message || "Some error occurred while retrieving notes."
+        });
+    });
 
 };
 
